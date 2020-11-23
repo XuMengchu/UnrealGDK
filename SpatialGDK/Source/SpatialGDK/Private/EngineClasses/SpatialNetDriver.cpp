@@ -26,6 +26,7 @@
 #include "EngineClasses/SpatialPendingNetGame.h"
 #include "EngineClasses/SpatialReplicationGraph.h"
 #include "EngineClasses/SpatialWorldSettings.h"
+#include "Interop/ActorSystem.h"
 #include "Interop/Connection/SpatialConnectionManager.h"
 #include "Interop/Connection/SpatialWorkerConnection.h"
 #include "Interop/GlobalStateManager.h"
@@ -106,6 +107,8 @@ USpatialNetDriver::USpatialNetDriver(const FObjectInitializer& ObjectInitializer
 
 	SpatialDebuggerReady = NewObject<USpatialBasicAwaiter>();
 }
+
+USpatialNetDriver::~USpatialNetDriver() = default;
 
 bool USpatialNetDriver::InitBase(bool bInitAsClient, FNetworkNotify* InNotify, const FURL& URL, bool bReuseAddressAndPort, FString& Error)
 {
@@ -422,6 +425,8 @@ void USpatialNetDriver::CreateAndInitializeCoreClasses()
 
 	RPCService = MakeUnique<SpatialGDK::SpatialRPCService>(
 		ActorAuthSubview, ActorNonAuthSubview, USpatialLatencyTracer::GetTracer(GetWorld()), Connection->GetEventTracer(), this);
+
+	ActorSystem = MakeUnique<SpatialGDK::ActorSystem>(ActorNonAuthSubview, this, &TimerManager);
 
 	Dispatcher->Init(Receiver, StaticComponentView, SpatialMetrics, SpatialWorkerFlags);
 	Sender->Init(this, &TimerManager, RPCService.Get(), Connection->GetEventTracer());
@@ -1815,6 +1820,11 @@ void USpatialNetDriver::TickDispatch(float DeltaTime)
 			Dispatcher->ProcessOps(Connection->GetWorkerMessages());
 		}
 
+		if (ActorSystem.IsValid())
+		{
+			ActorSystem->Advance();
+		}
+
 		if (WellKnownEntitySystem.IsValid())
 		{
 			WellKnownEntitySystem->Advance();
@@ -2363,7 +2373,7 @@ void USpatialNetDriver::RemoveActorChannel(Worker_EntityId EntityId, USpatialAct
 {
 	for (auto& ChannelRefs : Channel.ObjectReferenceMap)
 	{
-		Receiver->CleanupRepStateMap(ChannelRefs.Value);
+		ActorSystem->CleanupRepStateMap(ChannelRefs.Value);
 	}
 	Channel.ObjectReferenceMap.Empty();
 

@@ -19,17 +19,17 @@ struct NetOwningClientWorker : Component
 
 	NetOwningClientWorker() = default;
 
-	NetOwningClientWorker(const TSchemaOption<PhysicalWorkerName>& InWorkerId)
+	explicit NetOwningClientWorker(const TSchemaOption<PhysicalWorkerName>& InWorkerId)
 		: WorkerId(InWorkerId)
 	{
 	}
 
-	NetOwningClientWorker(const Worker_ComponentData& Data)
+	explicit NetOwningClientWorker(const Worker_ComponentData& Data)
 		: NetOwningClientWorker(Data.schema_type)
 	{
 	}
 
-	NetOwningClientWorker(Schema_ComponentData* Data)
+	explicit NetOwningClientWorker(Schema_ComponentData* Data)
 	{
 		Schema_Object* ComponentObject = Schema_GetComponentDataFields(Data);
 		if (Schema_GetBytesCount(ComponentObject, SpatialConstants::NET_OWNING_CLIENT_WORKER_FIELD_ID) == 1)
@@ -38,7 +38,7 @@ struct NetOwningClientWorker : Component
 		}
 	}
 
-	Worker_ComponentData CreateNetOwningClientWorkerData() { return CreateNetOwningClientWorkerData(WorkerId); }
+	Worker_ComponentData CreateNetOwningClientWorkerData() const { return CreateNetOwningClientWorkerData(WorkerId); }
 
 	static Worker_ComponentData CreateNetOwningClientWorkerData(const TSchemaOption<PhysicalWorkerName>& WorkerId)
 	{

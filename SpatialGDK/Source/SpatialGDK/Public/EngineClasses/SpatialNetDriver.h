@@ -10,7 +10,6 @@
 #include "Interop/SpatialDispatcher.h"
 #include "Interop/SpatialOutputDevice.h"
 #include "Interop/SpatialSnapshotManager.h"
-#include "SpatialView/OpList/OpList.h"
 #include "Utils/InterestFactory.h"
 #include "Utils/SpatialBasicAwaiter.h"
 
@@ -20,6 +19,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/OnlineReplStructs.h"
+#include "Interop/ActorSystem.h"
 #include "Interop/WellKnownEntitySystem.h"
 #include "IpNetDriver.h"
 #include "TimerManager.h"
@@ -73,6 +73,7 @@ class SPATIALGDK_API USpatialNetDriver : public UIpNetDriver
 
 public:
 	USpatialNetDriver(const FObjectInitializer& ObjectInitializer);
+	~USpatialNetDriver();
 
 	// Begin UObject Interface
 	virtual void BeginDestroy() override;
@@ -181,6 +182,9 @@ public:
 	UPROPERTY()
 	USpatialNetDriverDebugContext* DebugCtx;
 
+	TUniquePtr<SpatialGDK::SpatialRPCService> RPCService;
+	TUniquePtr<SpatialGDK::ActorSystem> ActorSystem;
+
 	TUniquePtr<SpatialGDK::InterestFactory> InterestFactory;
 	TUniquePtr<SpatialGDK::SpatialLoadBalanceEnforcer> LoadBalanceEnforcer;
 	TUniquePtr<SpatialVirtualWorkerTranslator> VirtualWorkerTranslator;
@@ -226,8 +230,6 @@ private:
 	TUniquePtr<SpatialDispatcher> Dispatcher;
 	TUniquePtr<SpatialSnapshotManager> SnapshotManager;
 	TUniquePtr<FSpatialOutputDevice> SpatialOutputDevice;
-
-	TUniquePtr<SpatialGDK::SpatialRPCService> RPCService;
 
 	TMap<Worker_EntityId_Key, USpatialActorChannel*> EntityToActorChannel;
 	TSet<Worker_EntityId_Key> DormantEntities;

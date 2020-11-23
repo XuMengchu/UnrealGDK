@@ -108,11 +108,14 @@ public:
 
 	void RetireWhenAuthoritive(Worker_EntityId EntityId, Worker_ComponentId ActorClassId, bool bIsNetStartup, bool bNeedsTearOff);
 
+	void ReceiveActor(Worker_EntityId EntityId);
+	void HandleActorAuthority(const Worker_AuthorityChangeOp& Op);
+	void HandleIndividualAddComponent(Worker_EntityId EntityId, Worker_ComponentId ComponentId,
+									  TUniquePtr<SpatialGDK::DynamicComponent> Data);
+
 private:
 	void EnterCriticalSection();
 	void LeaveCriticalSection();
-
-	void ReceiveActor(Worker_EntityId EntityId);
 	void DestroyActor(AActor* Actor, Worker_EntityId EntityId);
 
 	AActor* TryGetOrCreateActor(SpatialGDK::UnrealMetadata* UnrealMetadata, SpatialGDK::SpawnData* SpawnData,
@@ -126,14 +129,11 @@ private:
 	static FTransform GetRelativeSpawnTransform(UClass* ActorClass, FTransform SpawnTransform);
 
 	void HandlePlayerLifecycleAuthority(const Worker_AuthorityChangeOp& Op, class APlayerController* PlayerController);
-	void HandleActorAuthority(const Worker_AuthorityChangeOp& Op);
 
 	void ApplyComponentDataOnActorCreation(Worker_EntityId EntityId, const Worker_ComponentData& Data, USpatialActorChannel& Channel,
 										   const FClassInfo& ActorClassInfo, TArray<ObjectPtrRefPair>& OutObjectsToResolve);
 	void ApplyComponentData(USpatialActorChannel& Channel, UObject& TargetObject, const Worker_ComponentData& Data);
 
-	void HandleIndividualAddComponent(Worker_EntityId EntityId, Worker_ComponentId ComponentId,
-									  TUniquePtr<SpatialGDK::DynamicComponent> Data);
 	void AttachDynamicSubobject(AActor* Actor, Worker_EntityId EntityId, const FClassInfo& Info);
 
 	void ApplyComponentUpdate(const Worker_ComponentUpdate& ComponentUpdate, UObject& TargetObject, USpatialActorChannel& Channel,

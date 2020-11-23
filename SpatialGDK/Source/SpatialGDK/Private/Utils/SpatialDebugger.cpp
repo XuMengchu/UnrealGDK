@@ -407,10 +407,8 @@ void ASpatialDebugger::OnEntityRemoved(const Worker_EntityId EntityId)
 	EntityActorMapping.Remove(EntityId);
 }
 
-void ASpatialDebugger::ActorAuthorityChanged(const Worker_AuthorityChangeOp& AuthOp) const
+void ASpatialDebugger::ActorAuthorityGained(const Worker_EntityId EntityId) const
 {
-	check(AuthOp.authority == WORKER_AUTHORITY_AUTHORITATIVE && AuthOp.component_id == SpatialConstants::AUTHORITY_INTENT_COMPONENT_ID);
-
 	if (NetDriver->VirtualWorkerTranslator == nullptr)
 	{
 		// Currently, there's nothing to display in the debugger other than load balancing information.
@@ -420,20 +418,20 @@ void ASpatialDebugger::ActorAuthorityChanged(const Worker_AuthorityChangeOp& Aut
 	VirtualWorkerId LocalVirtualWorkerId = NetDriver->VirtualWorkerTranslator->GetLocalVirtualWorkerId();
 	FColor LocalVirtualWorkerColor = SpatialGDK::GetColorForWorkerName(NetDriver->VirtualWorkerTranslator->GetLocalPhysicalWorkerName());
 
-	SpatialDebugging* DebuggingInfo = NetDriver->StaticComponentView->GetComponentData<SpatialDebugging>(AuthOp.entity_id);
+	SpatialDebugging* DebuggingInfo = NetDriver->StaticComponentView->GetComponentData<SpatialDebugging>(EntityId);
 	if (DebuggingInfo == nullptr)
 	{
 		// Some entities won't have debug info, so create it now.
 		SpatialDebugging NewDebuggingInfo(LocalVirtualWorkerId, LocalVirtualWorkerColor, SpatialConstants::INVALID_VIRTUAL_WORKER_ID,
 										  InvalidServerTintColor, false);
-		NetDriver->Sender->SendAddComponents(AuthOp.entity_id, { NewDebuggingInfo.CreateSpatialDebuggingData() });
+		NetDriver->Sender->SendAddComponents(EntityId, { NewDebuggingInfo.CreateSpatialDebuggingData() });
 		return;
 	}
 
 	DebuggingInfo->AuthoritativeVirtualWorkerId = LocalVirtualWorkerId;
 	DebuggingInfo->AuthoritativeColor = LocalVirtualWorkerColor;
 	FWorkerComponentUpdate DebuggingUpdate = DebuggingInfo->CreateSpatialDebuggingUpdate();
-	NetDriver->Connection->SendComponentUpdate(AuthOp.entity_id, &DebuggingUpdate);
+	NetDriver->Connection->SendComponentUpdate(EntityId, &DebuggingUpdate);
 }
 
 void ASpatialDebugger::ActorAuthorityIntentChanged(Worker_EntityId EntityId, VirtualWorkerId NewIntentVirtualWorkerId) const
