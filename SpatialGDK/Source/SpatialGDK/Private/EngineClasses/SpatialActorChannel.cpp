@@ -92,7 +92,7 @@ bool FSpatialObjectRepState::MoveMappedObjectToUnmapped_r(const FUnrealObjectRef
 	{
 		FObjectReferences& ObjReferences = ObjReferencePair.Value;
 
-		if (ObjReferences.Array != NULL)
+		if (ObjReferences.Array)
 		{
 			if (MoveMappedObjectToUnmapped_r(ObjRef, *ObjReferences.Array))
 			{
@@ -1462,4 +1462,9 @@ bool USpatialActorChannel::SatisfiesSpatialPositionUpdateRequirements()
 	}
 
 	return false;
+}
+
+void FObjectReferencesMapDeleter::operator()(FObjectReferencesMap* Ptr) const
+{
+	delete Ptr;
 }
