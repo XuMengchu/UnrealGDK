@@ -1822,7 +1822,8 @@ void USpatialReceiver::OnCommandRequest(const Worker_Op& Op)
 	UE_LOG(LogSpatialReceiver, Verbose, TEXT("Received command request (entity: %lld, component: %d, function: %s)"), EntityId, ComponentId,
 		   *Function->GetName());
 
-	RPCService->ProcessOrQueueIncomingRPC(ObjectRef, SpatialGDK::RPCSender(), MoveTemp(Payload), /* RPCIdForLinearEventTrace */ TOptional<uint64>{});
+	RPCService->ProcessOrQueueIncomingRPC(ObjectRef, SpatialGDK::RPCSender(), MoveTemp(Payload),
+										  /* RPCIdForLinearEventTrace */ TOptional<uint64>{});
 	Sender->SendEmptyCommandResponse(ComponentId, CommandIndex, RequestId, Op.span_id);
 
 	AActor* TargetActor = Cast<AActor>(PackageMap->GetObjectFromEntityId(EntityId));
