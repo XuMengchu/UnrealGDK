@@ -92,7 +92,7 @@ bool FSpatialObjectRepState::MoveMappedObjectToUnmapped_r(const FUnrealObjectRef
 	{
 		FObjectReferences& ObjReferences = ObjReferencePair.Value;
 
-		if (ObjReferences.Array)
+		if (ObjReferences.Array.IsValid())
 		{
 			if (MoveMappedObjectToUnmapped_r(ObjRef, *ObjReferences.Array))
 			{
@@ -125,7 +125,7 @@ bool FSpatialObjectRepState::MoveMappedObjectToUnmapped(const FUnrealObjectRef& 
 void FSpatialObjectRepState::GatherObjectRef(TSet<FUnrealObjectRef>& OutReferenced, TSet<FUnrealObjectRef>& OutUnresolved,
 											 const FObjectReferences& CurReferences) const
 {
-	if (CurReferences.Array)
+	if (CurReferences.Array.IsValid())
 	{
 		for (auto const& Entry : *CurReferences.Array)
 		{
