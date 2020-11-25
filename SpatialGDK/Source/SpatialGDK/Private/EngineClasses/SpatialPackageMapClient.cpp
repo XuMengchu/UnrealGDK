@@ -396,6 +396,11 @@ const FClassInfo* USpatialPackageMapClient::TryResolveNewDynamicSubobjectAndGetC
 	return nullptr;
 }
 
+Worker_EntityId USpatialPackageMapClient::AllocateNewEntityId() const
+{
+	return EntityPool->GetNextEntityId();
+}
+
 FSpatialNetGUIDCache::FSpatialNetGUIDCache(USpatialNetDriver* InDriver)
 	: FNetGUIDCache(InDriver)
 {
