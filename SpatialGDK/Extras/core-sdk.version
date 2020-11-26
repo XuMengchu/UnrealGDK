@@ -1,2 +1,6 @@
 15.0.0-preview-4
+<<<<<<< HEAD
 // If changing version, update SpatialGDK/Source/SpatialGDK/Public/Utils/WorkerVersionCheck.h too
+=======
+// If changing version, update SpatialGDK/Source/SpatialGDK/Public/Utils/WorkerVersionCheck.h too
+>>>>>>> origin/master
